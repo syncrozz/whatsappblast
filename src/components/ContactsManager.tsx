@@ -15,7 +15,9 @@ import {
   MoreVertical,
   CheckSquare,
   Square,
-  ShieldCheck
+  ShieldCheck,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import { Contact } from '../types';
 import { sanitizePhoneNumber, formatPhoneDisplay } from '../utils/phone';
@@ -28,6 +30,8 @@ interface ContactsManagerProps {
   onDeleteBulk: (ids: string[]) => void;
   onOpenImport: () => void;
   onNavigateToBlast: (group?: string) => void;
+  isAdmin: boolean;
+  onRequireAdmin: () => void;
 }
 
 export const ContactsManager: React.FC<ContactsManagerProps> = ({
@@ -38,6 +42,8 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
   onDeleteBulk,
   onOpenImport,
   onNavigateToBlast,
+  isAdmin,
+  onRequireAdmin,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string>('All');
@@ -84,6 +90,10 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
   };
 
   const handleOpenAdd = () => {
+    if (!isAdmin) {
+      onRequireAdmin();
+      return;
+    }
     setEditingContact(null);
     setFormName('');
     setFormPhone('');
@@ -95,6 +105,10 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
   };
 
   const handleOpenEdit = (contact: Contact) => {
+    if (!isAdmin) {
+      onRequireAdmin();
+      return;
+    }
     setEditingContact(contact);
     setFormName(contact.name);
     setFormPhone(contact.phone);
@@ -148,6 +162,10 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
   };
 
   const handleExportCSV = () => {
+    if (!isAdmin) {
+      onRequireAdmin();
+      return;
+    }
     const headers = ['ID', 'Name', 'WhatsApp', 'Email', 'Group', 'OptInStatus'];
     const rows = filteredContacts.map(c => [
       c.externalId,
@@ -178,6 +196,17 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
               Directory Manager
             </span>
             <span className="text-xs text-slate-400">{contacts.length} Jumlah Kenalan</span>
+            {isAdmin ? (
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <Unlock className="w-3 h-3" />
+                <span>Admin Mode Aktif</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                <Lock className="w-3 h-3 text-amber-400" />
+                <span>Mod Baca Sahaja</span>
+              </span>
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1 flex items-center space-x-3">
             <Users className="w-8 h-8 text-emerald-400" />
@@ -189,23 +218,58 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={onOpenImport}
-            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition-colors cursor-pointer flex items-center space-x-2"
-          >
-            <Upload className="w-4 h-4 text-emerald-400" />
-            <span>Import Excel / CSV</span>
-          </button>
+          {isAdmin ? (
+            <>
+              <button
+                id="contacts-import-btn"
+                onClick={onOpenImport}
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition-colors cursor-pointer flex items-center space-x-2 shadow-sm"
+              >
+                <Upload className="w-4 h-4 text-emerald-400" />
+                <span>Import Excel / CSV</span>
+              </button>
 
-          <button
-            onClick={handleOpenAdd}
-            className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-md shadow-emerald-500/20 transition-all cursor-pointer flex items-center space-x-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tambah Kenalan</span>
-          </button>
+              <button
+                id="contacts-add-btn"
+                onClick={handleOpenAdd}
+                className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-md shadow-emerald-500/20 transition-all cursor-pointer flex items-center space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Tambah Kenalan</span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onRequireAdmin}
+              className="px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-300 border border-slate-700 font-medium text-sm transition-all cursor-pointer flex items-center space-x-2"
+              title="Masukkan PIN Admin (5313) untuk mengimport CSV dan mengurus kenalan"
+            >
+              <Lock className="w-4 h-4 text-amber-400" />
+              <span>Buka Admin Mode (PIN)</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Admin Notice Banner when locked */}
+      {!isAdmin && (
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-3 text-slate-300">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="font-semibold text-white">Mod Terkunci:</span> Butang import CSV, eksport, dan ubah data dilindungi dengan PIN keselamatan. Anda masih boleh memilih penerima untuk WhatsApp Blast.
+            </div>
+          </div>
+          <button
+            onClick={onRequireAdmin}
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold transition-colors cursor-pointer shrink-0"
+          >
+            Aktifkan Admin Mode →
+          </button>
+        </div>
+      )}
 
       {/* Filter and Search Bar */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4">
@@ -268,18 +332,20 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
                 🚀 Blast PDF kepada Pilihan
               </button>
 
-              <button
-                onClick={() => {
-                  if (confirm(`Padamkan ${selectedIds.length} kenalan yang dipilih?`)) {
-                    onDeleteBulk(selectedIds);
-                    setSelectedIds([]);
-                  }
-                }}
-                className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/40 transition-colors cursor-pointer flex items-center space-x-1"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Padam Pilihan</span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    if (confirm(`Padamkan ${selectedIds.length} kenalan yang dipilih?`)) {
+                      onDeleteBulk(selectedIds);
+                      setSelectedIds([]);
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/40 transition-colors cursor-pointer flex items-center space-x-1"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Padam Pilihan</span>
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -289,13 +355,24 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-4 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>Menunjukkan {filteredContacts.length} daripada {contacts.length} kenalan</span>
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center space-x-1 text-slate-300 hover:text-emerald-400 cursor-pointer font-medium"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Eksport CSV</span>
-          </button>
+          {isAdmin ? (
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center space-x-1 text-slate-300 hover:text-emerald-400 cursor-pointer font-medium"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Eksport CSV</span>
+            </button>
+          ) : (
+            <button
+              onClick={onRequireAdmin}
+              className="flex items-center space-x-1 text-slate-500 hover:text-slate-400 cursor-pointer font-medium"
+              title="Aktifkan Admin Mode untuk mengeksport CSV"
+            >
+              <Lock className="w-3 h-3 text-amber-400" />
+              <span>Eksport CSV (Admin)</span>
+            </button>
+          )}
         </div>
 
         <div className="overflow-x-auto">
@@ -370,24 +447,36 @@ export const ContactsManager: React.FC<ContactsManagerProps> = ({
                         )}
                       </td>
                       <td className="p-4 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenEdit(c)}
-                          className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(`Padamkan ${c.name}?`)) {
-                              onDeleteContact(c.id);
-                            }
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-                          title="Padam"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {isAdmin ? (
+                          <>
+                            <button
+                              onClick={() => handleOpenEdit(c)}
+                              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                              title="Ubah Maklumat Kenalan"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Padamkan ${c.name}?`)) {
+                                  onDeleteContact(c.id);
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                              title="Padam Kenalan"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={onRequireAdmin}
+                            className="p-1.5 text-slate-600 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                            title="Aktifkan Admin Mode untuk mengubah data kenalan ini"
+                          >
+                            <Lock className="w-4 h-4" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );

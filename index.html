@@ -1,18 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="ms">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-    <meta name="description" content="An application built with Google AI Studio." />
-    <meta property="og:title" content="My Google AI Studio App" />
-    <meta property="og:description" content="An application built with Google AI Studio." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Title & SEO -->
+    <title>WhatsApp Communication Platform & PDF Blast</title>
+    <meta name="description" content="Centralised WhatsApp Business Cloud API communication platform for contact management, text blast, and one-command PDF distribution with real-time delivery tracking." />
+    
+    <!-- PWA & Mobile Web App Meta -->
+    <meta name="theme-color" content="#020617" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="WhatsApp Hub" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.svg" />
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="WhatsApp Communication Platform" />
+    <meta property="og:title" content="WhatsApp Communication Platform & PDF Blast" />
+    <meta property="og:description" content="One-Command PDF Blast, Real-Time WhatsApp Delivery Tracking, and Secure Contact Management with Firebase Cloud Persistence." />
+    <meta property="og:image" content="/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WhatsApp Communication Platform & PDF Blast" />
+    <meta name="twitter:description" content="One-Command PDF Blast, Real-Time WhatsApp Delivery Tracking, and Secure Contact Management with Firebase Cloud Persistence." />
+    <meta name="twitter:image" content="/og-image.svg" />
   </head>
-  <body>
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.log('SW registration error', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
 

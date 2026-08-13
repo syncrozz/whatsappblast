@@ -1,0 +1,24 @@
+{
+  "name": "WhatsApp Communication Platform",
+  "short_name": "WhatsApp Hub",
+  "description": "Centralised WhatsApp Business Cloud API communication platform for contact management, text blast, and one-command PDF distribution with real-time delivery tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

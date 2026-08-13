@@ -12,7 +12,8 @@ import {
   ArrowRight,
   TrendingUp,
   ShieldCheck,
-  Zap
+  Zap,
+  Lock
 } from 'lucide-react';
 import { Contact, Campaign } from '../types';
 
@@ -22,6 +23,8 @@ interface DashboardProps {
   onNavigate: (tab: string, extra?: any) => void;
   onOpenCampaign: (campaign: Campaign) => void;
   onOpenImport: () => void;
+  isAdmin: boolean;
+  onRequireAdmin: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -30,6 +33,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigate,
   onOpenCampaign,
   onOpenImport,
+  isAdmin,
+  onRequireAdmin,
 }) => {
   // Aggregate stats
   const totalContacts = contacts.length;
