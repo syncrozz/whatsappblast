@@ -1,0 +1,6 @@
+{
+  "name": "WhatsApp Communication Platform",
+  "description": "Centralised WhatsApp Business Cloud API communication platform for contact management, text blast, and one-command PDF distribution with real-time delivery tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
